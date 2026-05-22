@@ -75,8 +75,52 @@ export async function POST(request: Request) {
       console.log('no customer email provided, skipping welcome email')
     }
   }
+if (type === 'appointment_set') {
+    // Email to customer confirming appointment
+    if (email) {
+      await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${resendKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          from: 'LocalCRM <onboarding@resend.dev>',
+          to: email,
+          subject: 'Your appointment is confirmed!',
+          html: `
+            <p>Hi ${leadName},</p>
+            <p>Great news! Your appointment has been set${serviceNeeded ? ` for ${serviceNeeded}` : ''}.</p>
+            <p>We will be in touch shortly with more details. If you have any questions, feel free to reply to this email.</p>
+            <p>We look forward to seeing you!</p>
+          `,
+        }),
+      })
+      console.log('appointment email sent to customer:', email)
+    }
 
-  if (type === 'follow_up_reminder') {
+    // Email to you
+    await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${resendKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: 'LocalCRM <onboarding@resend.dev>',
+        to: alertEmail,
+        subject: `Appointment Set: ${leadName}`,
+        html: `
+          <h2>Appointment Set</h2>
+          <p><strong>Name:</strong> ${leadName}</p>
+          <p><strong>Phone:</strong> ${phone || 'N/A'}</p>
+          <p><strong>Email:</strong> ${email || 'N/A'}</p>
+          <p><strong>Service:</strong> ${serviceNeeded || 'N/A'}</p>
+        `,
+      }),
+    })
+  }
+  if (type === 'follow_up') {
     await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {

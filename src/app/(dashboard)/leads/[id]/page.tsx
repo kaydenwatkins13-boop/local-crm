@@ -26,10 +26,26 @@ export default function LeadDetailPage() {
 
   useEffect(() => { fetchLead() }, [id])
 
-  async function moveTo(stage: Stage) {
+ async function moveTo(stage: Stage) {
     const { error } = await supabase.from('leads').update({ stage }).eq('id', id)
     if (error) toast.error(error.message)
-    else { toast.success(`Moved to ${stage}`); fetchLead() }
+    else {
+      toast.success(`Moved to ${stage}`)
+      if (stage === 'Appointment Set') {
+        await fetch('/api/notify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'appointment_set',
+            leadName: lead?.name,
+            phone: lead?.phone,
+            email: lead?.email,
+            serviceNeeded: lead?.service_needed,
+          }),
+        })
+      }
+      fetchLead()
+    }
   }
 
   async function deleteLead() {
