@@ -49,6 +49,17 @@ export default function LeadForm({ lead, onClose, onSave }: Props) {
         const { error } = await supabase.from('leads').insert({ ...payload, user_id: user!.id })
         if (error) throw error
         toast.success('Lead added')
+        await fetch('/api/notify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'new_lead',
+            leadName: payload.name,
+            phone: payload.phone,
+            email: payload.email,
+            serviceNeeded: payload.service_needed,
+          }),
+        })
       }
       onSave()
       onClose()
