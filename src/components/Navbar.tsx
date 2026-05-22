@@ -1,5 +1,6 @@
 'use client'
 import Link from 'next/link'
+import { Calendar } from 'lucide-react'
 import { usePathname, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { LayoutDashboard, Users, Kanban, LogOut } from 'lucide-react'
@@ -15,10 +16,11 @@ export default function Navbar({ user }: { user: User }) {
     router.push('/login')
   }
 
-  const links = [
-    { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { href: '/leads',     label: 'Leads',     icon: Users },
-    { href: '/pipeline',  label: 'Pipeline',  icon: Kanban },
+const links = [
+    { href: '/dashboard',  label: 'Dashboard',   icon: LayoutDashboard },
+    { href: '/leads',      label: 'Leads',        icon: Users },
+    { href: '/pipeline',   label: 'Pipeline',     icon: Kanban },
+    { href: '/followups',  label: 'Follow-ups',   icon: Calendar },
   ]
 
   return (
